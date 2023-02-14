@@ -105,3 +105,6 @@ CMakeLists.txt.user*
 *.out
 *.app
 
+# MinGW Debug
+build-RestaurantSystem-Desktop_Qt_5_15_2_MinGW_64_bit-Debug/
+
