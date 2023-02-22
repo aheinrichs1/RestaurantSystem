@@ -10,16 +10,22 @@ void validateTableSelection(int &input);
 void validateBoolSelection(int &input);
 bool areAllTablesClosed();
 bool areAllTablesOpen();
+bool areAllBarSeatsClosed();
+bool areAllBarSeatsOpen();
 
 //Declare Program Variables
+const int NUMBER_OF_BAR_SEATS = 10;
 const int NUMBER_OF_TABLES = 19;
+
 //Based on the plain restaurant layout created by Suzette
-//6 Tables in main area, 7 Booths, and 5 Tables in party room
+//6 Tables in main area, 7 Booths, and 5 Tables in party room, and 10 seats at the bar
 
-//Bar seating not implemented yet
+//Bar seating
+vector<bool> isBarSeatOccupied;
+int numBarSeatsOpen;
 
-vector<bool> isTableOccupied; //Early working model
-//TODO: create a Table object, and a vector list of Table objects
+//Table seating
+vector<bool> isTableOccupied;
 
 int main() {
 
@@ -32,6 +38,10 @@ int main() {
 
     //Reset tables (maybe find a way to save table status at a later point)
     isTableOccupied = vector<bool>(NUMBER_OF_TABLES, false);
+
+    //Reset bar seats
+    isBarSeatOccupied = vector<bool>(NUMBER_OF_BAR_SEATS, false);
+    numBarSeatsOpen = NUMBER_OF_BAR_SEATS;
 
     //START USER INPUT LOOP (runs until end of day):
     while(endDay == false) {
@@ -55,17 +65,62 @@ int main() {
             cin >> tableSelection;
             //Validate input
             validateTableSelection(tableSelection);
-            //Check that table selected is open
-            while(isTableOccupied[tableSelection - 1]) {
-                cout << "Sorry, that table is occupied. Choose another table: ";
-                cin >> tableSelection;
-                //Validate input
-                validateTableSelection(tableSelection);
+
+            //Check if bar seating was selected
+            if(tableSelection == (NUMBER_OF_TABLES + 1)) {
+
+                //BAR SEATING
+
+                //Check if any bar seats are open
+                if(numBarSeatsOpen == 0) {
+                    cout << endl << "Sorry, there are no bar seats open." << endl << endl;
+                } else {
+                    //Determine number of people to sit at bar
+                    cout << "Bar selected. Seats open: " << numBarSeatsOpen << endl <<
+                            "How many are sitting? ";
+                    //Initialize temp variable for determining amount sitting
+                    int numBarSeatInput;
+                    cin >> numBarSeatInput;
+                    //Validate input
+                    while(numBarSeatInput <= 0) {
+                        cout << "Invalid input" << endl;
+                        cout << "Bar selected. How many are sitting? ";
+                        cin >> numBarSeatInput;
+                    }
+                    //Check if too many people are trying to sit
+                    if(numBarSeatInput > numBarSeatsOpen) {
+                        cout << endl << "Sorry, there are not enough seats available at the bar." << endl << endl;
+                    } else {
+                        //Change unoccupied bar seats to occupied
+                        for(size_t i = 0; i < NUMBER_OF_BAR_SEATS; i++) {
+                            //iterate i to next unoccupied seat
+                            while(isBarSeatOccupied[i]) {
+                                i++;
+                            }
+                            if(numBarSeatInput > 0) {
+                                isBarSeatOccupied[i] = true;
+                                --numBarSeatInput;
+                                //Subtract total bar seats open
+                                --numBarSeatsOpen;
+                            }
+                        }
+                        cout << endl << "Party Seated at bar." << endl << endl;
+                    }
+                }
+            } else {
+
+                //Check that table selected is open
+                while(isTableOccupied[tableSelection - 1]) {
+                    cout << "Sorry, that table is occupied. Choose another table: ";
+                    cin >> tableSelection;
+                    //Validate input
+                    validateTableSelection(tableSelection);
+                }
+                //Set table selected to occupied and notify user
+                isTableOccupied[tableSelection - 1] = true;
+                cout << "Table number " << tableSelection << " has been set to occupied." << endl <<
+                        "--------------------------------------" << endl;
             }
-            //Set table selected to occupied and notify user
-            isTableOccupied[tableSelection - 1] = true;
-            cout << "Table number " << tableSelection << " has been set to occupied." << endl <<
-                    "--------------------------------------" << endl;
         }
 
         //Edit table
@@ -76,40 +131,81 @@ int main() {
             cin >> tableSelection;
             //Validate input
             validateTableSelection(tableSelection);
-            cout << endl << "Editing table " << tableSelection << endl;
-            cout << "Enter 1 to set table to occupied, Enter 0 to set table to open: ";
-            cin >> userInput;
-            //Validate input
-            validateBoolSelection(userInput);
-            isTableOccupied[tableSelection - 1] = userInput;
-            cout << "Table " << tableSelection << " has been set to " <<
-                    (isTableOccupied[tableSelection - 1] ? "Occupied" : "Open") << endl <<
-                    "--------------------------------------" << endl;
-
+            //Check for bar seating input
+            if(tableSelection == (NUMBER_OF_TABLES + 1)) {
+                cout << endl << "Editing bar seats" << endl;
+                cout << "Seats open: " << numBarSeatsOpen << endl;
+                cout << "How many seats would you like to set open? ";
+                cin >> userInput;
+                //Validate
+                while((userInput < 0) || (userInput > NUMBER_OF_BAR_SEATS)) {
+                    cout << "Invalid number of seats, enter between 0 and " << NUMBER_OF_BAR_SEATS << endl <<
+                            "how many seat you would like to set open: ";
+                    cin >> userInput;
+                }
+                //Reset isBarSeatOccupied to userInput number of bar seats open
+                //Resetting isBarSeatOccupied
+                isBarSeatOccupied = vector<bool>(NUMBER_OF_BAR_SEATS, false);
+                numBarSeatsOpen = NUMBER_OF_BAR_SEATS;
+                //iterating through isBarSeatOccupied (NUMBER_OF_BAR_SEATS - userInput) number of times
+                for(int i = 0; i < (NUMBER_OF_BAR_SEATS - userInput); i++) {
+                    isBarSeatOccupied[i] = true;
+                    --numBarSeatsOpen;
+                }
+                cout << endl << "Bar seats set to " << userInput << " open." << endl << endl;
+            } else {
+                cout << endl << "Editing table " << tableSelection << endl;
+                cout << "Enter 1 to set table to occupied, Enter 0 to set table to open: ";
+                cin >> userInput;
+                //Validate input
+                validateBoolSelection(userInput);
+                isTableOccupied[tableSelection - 1] = userInput;
+                cout << "Table " << tableSelection << " has been set to " <<
+                        (isTableOccupied[tableSelection - 1] ? "Occupied" : "Open") << endl <<
+                        "--------------------------------------" << endl;
+            }
         }
 
-        //Unseat party (reset table)
+        //Reset table or bar seating
         else if(userInput == 3) {
             //display tables
             displayTables();
-            if (areAllTablesOpen()) {
-                cout << endl << "All tables are open!" << endl;
+            if (areAllTablesOpen() && areAllBarSeatsOpen()) {
+                cout << endl << "All tables and bar seats are open!" << endl;
                 cout << "Returning to main menu" << endl << endl;
             } else {
-                cout << endl << "Which table would you like to clear? ";
+                cout << endl << "Which table would you like to clear? Select 20 for bar seating ";
                 cin >> tableSelection;
                 //Validate input
                 validateTableSelection(tableSelection);
-                //Check that table selected is occupied
-                while(!isTableOccupied[tableSelection - 1]) {
-                    cout << "Sorry, that table is already open. Choose another table: ";
-                    cin >> tableSelection;
-                    //Validate input
-                    validateTableSelection(tableSelection);
+                //Check if bar table is asked to be cleared
+                if(tableSelection == (NUMBER_OF_TABLES + 1)) {
+                    cout << "Are you sure you would like to clear the bar seating to open?" << endl <<
+                            "1 for yes, 0 for cancel: ";
+                    cin >> userInput;
+                    //Validate bool
+                    validateBoolSelection(userInput);
+                    if(userInput == 1) {
+                        //Reset bar seating to open
+                        isBarSeatOccupied = vector<bool>(NUMBER_OF_BAR_SEATS, false);
+                        numBarSeatsOpen = NUMBER_OF_BAR_SEATS;
+                        cout << "Bar seating has been reset to " << NUMBER_OF_BAR_SEATS << endl <<
+                                "Returning to the main menu." << endl << endl;
+                    } else {
+                        cout << "Cancelled, returning to the main menu." << endl << endl;
+                    }
+                } else {
+                    //Check that table selected is occupied
+                    while(!isTableOccupied[tableSelection - 1]) {
+                        cout << "Sorry, that table is already open. Choose another table: ";
+                        cin >> tableSelection;
+                        //Validate input
+                        validateTableSelection(tableSelection);
+                    }
+                    cout << "Clearing table " << tableSelection << endl;
+                    isTableOccupied[tableSelection - 1] = 0;
+                    cout << "--------------------------------------" << endl;
                 }
-                cout << "Clearing table " << tableSelection << endl;
-                isTableOccupied[tableSelection - 1] = 0;
-                cout << "--------------------------------------" << endl;
             }
         }
 
@@ -182,6 +278,10 @@ void displayTables(){
         cout << i + 1 << ":" << (isTableOccupied[i] ? "Occupied" : "Open") << " ";
     }
     cout << endl;
+    //Display bar seats
+    cout << endl << (NUMBER_OF_TABLES + 1) << ": BAR" << endl <<
+            "-------" << endl <<
+            "Seats Open: " << numBarSeatsOpen << endl;
 }
 
 void validateMenuSelection(int &input) {
@@ -193,7 +293,7 @@ void validateMenuSelection(int &input) {
 }
 
 void validateTableSelection(int &input) {
-    while((input < 1) || (input > NUMBER_OF_TABLES)) {
+    while((input < 1) || (input > (NUMBER_OF_TABLES + 1))) {
         cout << "Invalid selection" << endl;
         cout << "Choose a table between 1 and " << NUMBER_OF_TABLES;
         cin >> input;
@@ -220,4 +320,14 @@ bool areAllTablesOpen() {
         if(isTableOccupied[i]) return false;
     }
     return true;
+}
+
+bool areAllBarSeatsClosed() {
+    if(numBarSeatsOpen == 0) return true;
+    return false;
+}
+
+bool areAllBarSeatsOpen() {
+    if(numBarSeatsOpen == NUMBER_OF_BAR_SEATS) return true;
+    return false;
 }
