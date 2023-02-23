@@ -8,6 +8,7 @@ using namespace std;
 struct Reservation {
     string name;
     string number;
+    int sizeOfParty;
     int year;
     int month;
     int day;
@@ -299,9 +300,9 @@ int main() {
                                 "----------------" << endl;
                         for(size_t i = 0; i < reservationsToday.size(); i++) {
                             cout << "Reservation " << (i+1) << ": ";
-                            displayTime(reservations[i]);
-                            cout << "  Name: " << reservations[i].name <<
-                                    " | Number: " << reservations[i].number << endl;
+                            displayTime(reservationsToday[i]);
+                            cout << "  Name: " << reservationsToday[i].name <<
+                                    " | Party size: " << reservationsToday[i].sizeOfParty << endl;
                         }
                     }
 
@@ -314,7 +315,8 @@ int main() {
                         cout << " at ";
                         displayTime(reservations[i]);
                         cout << "  Name: " << reservations[i].name <<
-                                " | Number: " << reservations[i].number << endl;
+                                " | Number: " << reservations[i].number <<
+                                " | Party size: " << reservations[i].sizeOfParty << endl;
                     }
                     cout << endl;
                 }
@@ -323,7 +325,9 @@ int main() {
 
         //Make reservation
         else if(userInput == 6) {
-
+            cout << "Make reservation:" << endl <<
+                    "-----------------" << endl;
+            //TODO
         }
 
         //Cancel/remove reservation
@@ -459,6 +463,7 @@ vector<Reservation> createSampleReservations() {
     Reservation a;
     a.name = "Alex Heinrichs";
     a.number = "123-456-7899";
+    a.sizeOfParty = 2;
     a.year = 2023;
     a.month = 2;
     a.day = 23;
@@ -467,6 +472,7 @@ vector<Reservation> createSampleReservations() {
     Reservation b;
     b.name = "Alex Honricks";
     b.number = "999-999-9999";
+    b.sizeOfParty = 1;
     b.year = 2023;
     b.month = 2;
     b.day = 23;
@@ -475,6 +481,7 @@ vector<Reservation> createSampleReservations() {
     Reservation c;
     c.name = "Alex The third";
     c.number = "111-222-3456";
+    c.sizeOfParty = 4;
     c.year = 2023;
     c.month = 2;
     c.day = 23;
@@ -483,6 +490,7 @@ vector<Reservation> createSampleReservations() {
     Reservation d;
     d.name = "Alex The fourth";
     d.number = "111-222-3456";
+    d.sizeOfParty = 7;
     d.year = 2023;
     d.month = 2;
     d.day = 25;
