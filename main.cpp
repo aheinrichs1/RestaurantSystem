@@ -1,10 +1,25 @@
 #include <iostream>
+#include <iomanip>
 #include <vector>
+#include <ctime> //used for reservations
 using namespace std;
+
+//Structure for a Reservation
+struct Reservation {
+    string name;
+    string number;
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+};
 
 //function declarations:
 void displayMenu();
 void displayTables();
+void displayDate(Reservation reservation);
+void displayTime(Reservation reservation);
 void validateMenuSelection(int &input);
 void validateTableSelection(int &input);
 void validateBoolSelection(int &input);
@@ -12,6 +27,8 @@ bool areAllTablesClosed();
 bool areAllTablesOpen();
 bool areAllBarSeatsClosed();
 bool areAllBarSeatsOpen();
+tm *getTimeNow();
+vector<Reservation> createSampleReservations();
 
 //Declare Program Variables
 const int NUMBER_OF_BAR_SEATS = 10;
@@ -19,13 +36,15 @@ const int NUMBER_OF_TABLES = 19;
 
 //Based on the plain restaurant layout created by Suzette
 //6 Tables in main area, 7 Booths, and 5 Tables in party room, and 10 seats at the bar
-
 //Bar seating
 vector<bool> isBarSeatOccupied;
 int numBarSeatsOpen;
 
 //Table seating
 vector<bool> isTableOccupied;
+
+//Reservations
+vector<Reservation> reservations;
 
 int main() {
 
@@ -42,6 +61,13 @@ int main() {
     //Reset bar seats
     isBarSeatOccupied = vector<bool>(NUMBER_OF_BAR_SEATS, false);
     numBarSeatsOpen = NUMBER_OF_BAR_SEATS;
+
+    //set Reservations to an empty list
+    reservations = vector<Reservation>();
+
+    //TESTING
+    reservations = createSampleReservations();
+    cout << "Size of reservations : " << reservations.size() << endl << endl;
 
     //START USER INPUT LOOP (runs until end of day):
     while(endDay == false) {
@@ -217,7 +243,28 @@ int main() {
 
         //View reservations for the day
         else if(userInput == 5) {
-
+            //get the current time
+            tm *timeNow = getTimeNow();
+            cout << "Would you like to check the reservations for today or all reservations?" << endl <<
+                    "Enter 1 to check for today or 0 for all: ";
+            cin >> userInput;
+            //Validate input
+            validateBoolSelection(userInput);
+            if(userInput == 1) {
+                //TODO
+            } else { //Listing all reservations
+                cout << endl << "ALL RESERVATIONS" << endl <<
+                        "----------------" << endl;
+                for(size_t i = 0; i < reservations.size(); i++) {
+                    cout << "Reservation " << (i+1) << ": ";
+                    displayDate(reservations[i]);
+                    cout << " at ";
+                    displayTime(reservations[i]);
+                    cout << "  Name: " << reservations[i].name <<
+                            " | Number: " << reservations[i].number << endl;
+                }
+                cout << endl;
+            }
         }
 
         //Make reservation
@@ -284,6 +331,18 @@ void displayTables(){
             "Seats Open: " << numBarSeatsOpen << endl;
 }
 
+void displayDate(Reservation reservation) {
+    cout << reservation.month << "/" << reservation.year;
+}
+
+void displayTime(Reservation reservation) {
+    cout << setfill('0');
+    cout << ((reservation.hour > 12) ? (reservation.hour - 12) : (reservation.hour)) << ":" <<
+            ((reservation.minute == 0) ? (setw(2)) : ((reservation.minute < 10) ? (setw(1)) : (setw(0)))) <<
+            reservation.minute << " " <<
+            ((reservation.hour > 11) ? ("PM") : ("AM"));
+}
+
 void validateMenuSelection(int &input) {
     while((input < 1) || (input > 9) || (input == 8)) {
           cout << "Invalid input" << endl <<
@@ -330,4 +389,45 @@ bool areAllBarSeatsClosed() {
 bool areAllBarSeatsOpen() {
     if(numBarSeatsOpen == NUMBER_OF_BAR_SEATS) return true;
     return false;
+}
+
+tm *getTimeNow() {
+    //get time
+    time_t now = time(NULL);
+    //turn into a tm structure for reading contents easily
+    tm *ltm = localtime(&now);
+    return ltm;
+}
+
+//USED FOR TESTING:
+vector<Reservation> createSampleReservations() {
+    vector<Reservation> sampleList;
+    Reservation a;
+    a.name = "Alex Heinrichs";
+    a.number = "123-456-7899";
+    a.year = 2023;
+    a.month = 2;
+    a.day = 23;
+    a.hour = 12;
+    a.minute = 30;
+    Reservation b;
+    b.name = "Alex Honricks";
+    b.number = "999-999-9999";
+    b.year = 2023;
+    b.month = 2;
+    b.day = 23;
+    b.hour = 12;
+    b.minute = 0;
+    Reservation c;
+    c.name = "Alex The third";
+    c.number = "111-222-3456";
+    c.year = 2023;
+    c.month = 2;
+    c.day = 23;
+    c.hour = 13;
+    c.minute = 30;
+    sampleList.push_back(a);
+    sampleList.push_back(b);
+    sampleList.push_back(c);
+    return sampleList;
 }
