@@ -67,7 +67,7 @@ int main() {
 
     //TESTING
     reservations = createSampleReservations();
-    cout << "Size of reservations : " << reservations.size() << endl << endl;
+    //cout << "Size of reservations : " << reservations.size() << endl << endl;
 
     //START USER INPUT LOOP (runs until end of day):
     while(endDay == false) {
@@ -104,10 +104,12 @@ int main() {
                     //Determine number of people to sit at bar
                     cout << "Bar selected. Seats open: " << numBarSeatsOpen << endl <<
                             "How many are sitting? ";
+
                     //Initialize temp variable for determining amount sitting
                     int numBarSeatInput;
-                    cin >> numBarSeatInput;
+                    cin >> numBarSeatInput; //input variable
                     //Validate input
+
                     while(numBarSeatInput <= 0) {
                         cout << "Invalid input" << endl;
                         cout << "Bar selected. How many are sitting? ";
@@ -116,8 +118,10 @@ int main() {
                     //Check if too many people are trying to sit
                     if(numBarSeatInput > numBarSeatsOpen) {
                         cout << endl << "Sorry, there are not enough seats available at the bar." << endl << endl;
+
+                    //Else Change unoccupied bar seats to occupied
                     } else {
-                        //Change unoccupied bar seats to occupied
+
                         for(int i = 0; i < NUMBER_OF_BAR_SEATS; i++) {
                             //iterate i to next unoccupied seat
                             while(isBarSeatOccupied[i]) {
@@ -157,6 +161,7 @@ int main() {
             cin >> tableSelection;
             //Validate input
             validateTableSelection(tableSelection);
+
             //Check for bar seating input
             if(tableSelection == (NUMBER_OF_TABLES + 1)) {
                 cout << endl << "Editing bar seats" << endl;
@@ -164,27 +169,35 @@ int main() {
                 cout << "How many seats would you like to set open? ";
                 cin >> userInput;
                 //Validate
+
                 while((userInput < 0) || (userInput > NUMBER_OF_BAR_SEATS)) {
                     cout << "Invalid number of seats, enter between 0 and " << NUMBER_OF_BAR_SEATS << endl <<
                             "how many seat you would like to set open: ";
                     cin >> userInput;
                 }
+
                 //Reset isBarSeatOccupied to userInput number of bar seats open
+
                 //Resetting isBarSeatOccupied
                 isBarSeatOccupied = vector<bool>(NUMBER_OF_BAR_SEATS, false);
                 numBarSeatsOpen = NUMBER_OF_BAR_SEATS;
+
                 //iterating through isBarSeatOccupied (NUMBER_OF_BAR_SEATS - userInput) number of times
                 for(int i = 0; i < (NUMBER_OF_BAR_SEATS - userInput); i++) {
                     isBarSeatOccupied[i] = true;
                     --numBarSeatsOpen;
                 }
                 cout << endl << "Bar seats set to " << userInput << " open." << endl << endl;
+
+            //Else edit selected table
             } else {
                 cout << endl << "Editing table " << tableSelection << endl;
                 cout << "Enter 1 to set table to occupied, Enter 0 to set table to open: ";
                 cin >> userInput;
                 //Validate input
                 validateBoolSelection(userInput);
+
+                //Set table
                 isTableOccupied[tableSelection - 1] = userInput;
                 cout << "Table " << tableSelection << " has been set to " <<
                         (isTableOccupied[tableSelection - 1] ? "Occupied" : "Open") << endl <<
@@ -196,6 +209,8 @@ int main() {
         else if(userInput == 3) {
             //display tables
             displayTables();
+
+            //check if tables and bar seats are all open
             if (areAllTablesOpen() && areAllBarSeatsOpen()) {
                 cout << endl << "All tables and bar seats are open!" << endl;
                 cout << "Returning to main menu" << endl << endl;
@@ -204,6 +219,7 @@ int main() {
                 cin >> tableSelection;
                 //Validate input
                 validateTableSelection(tableSelection);
+
                 //Check if bar table is asked to be cleared
                 if(tableSelection == (NUMBER_OF_TABLES + 1)) {
                     cout << "Are you sure you would like to clear the bar seating to open?" << endl <<
@@ -211,6 +227,7 @@ int main() {
                     cin >> userInput;
                     //Validate bool
                     validateBoolSelection(userInput);
+
                     if(userInput == 1) {
                         //Reset bar seating to open
                         isBarSeatOccupied = vector<bool>(NUMBER_OF_BAR_SEATS, false);
@@ -243,27 +260,64 @@ int main() {
 
         //View reservations for the day
         else if(userInput == 5) {
-            //get the current time
-            tm *timeNow = getTimeNow();
-            cout << "Would you like to check the reservations for today or all reservations?" << endl <<
-                    "Enter 1 to check for today or 0 for all: ";
-            cin >> userInput;
-            //Validate input
-            validateBoolSelection(userInput);
-            if(userInput == 1) {
-                //TODO
-            } else { //Listing all reservations
-                cout << endl << "ALL RESERVATIONS" << endl <<
-                        "----------------" << endl;
-                for(size_t i = 0; i < reservations.size(); i++) {
-                    cout << "Reservation " << (i+1) << ": ";
-                    displayDate(reservations[i]);
-                    cout << " at ";
-                    displayTime(reservations[i]);
-                    cout << "  Name: " << reservations[i].name <<
-                            " | Number: " << reservations[i].number << endl;
+            //Check if there are any reservations today
+            if(reservations.empty()) {
+                cout << "There are no reservations" << endl <<
+                        "-------------------------" << endl << endl;
+            } else { //if there are reservations, continue with viewing options
+                //get the current time
+                tm *now = getTimeNow();
+                cout << "Would you like to check the reservations for today or all reservations?" << endl <<
+                        "Enter 1 to check for today or 0 for all: ";
+                cin >> userInput;
+                //Validate input
+                validateBoolSelection(userInput);
+                if(userInput == 1) {
+                    //Define a temp vector list of type Reservation for listing today's reservations
+                    vector<Reservation> reservationsToday;
+
+                    //Go through list and select all reservations with same date as today
+                    for(size_t i = 0; i < reservations.size(); i++) {
+                        //Ask if reservations[i] is on same day as today
+                        //Note: tm_yday displays years since 1900, so 1900 must be added for accurate year
+                        //Also: tm_mon displays months from 0-11, so 1 must be added
+                        if(((now->tm_year + 1900) == reservations[i].year) &&
+                                ((now->tm_mon + 1) == reservations[i].month) &&
+                                (now->tm_mday == reservations[i].day)) {
+                            //if true, add reservations[i] to reservationsToday list
+                            reservationsToday.push_back(reservations[i]);
+                        }
+                    }
+
+                    //Check if there are no reservations today
+                    if(reservationsToday.size() == 0) {
+                        cout << "There are no reservations today" << endl <<
+                                "-------------------------------" << endl << endl;
+                    } else {
+                        //Display today's reservations
+                        cout << endl << "TODAYS RESERVATIONS" << endl <<
+                                "----------------" << endl;
+                        for(size_t i = 0; i < reservationsToday.size(); i++) {
+                            cout << "Reservation " << (i+1) << ": ";
+                            displayTime(reservations[i]);
+                            cout << "  Name: " << reservations[i].name <<
+                                    " | Number: " << reservations[i].number << endl;
+                        }
+                    }
+
+                } else { //Listing all reservations
+                    cout << endl << "ALL RESERVATIONS" << endl <<
+                            "----------------" << endl;
+                    for(size_t i = 0; i < reservations.size(); i++) {
+                        cout << "Reservation " << (i+1) << ": ";
+                        displayDate(reservations[i]);
+                        cout << " at ";
+                        displayTime(reservations[i]);
+                        cout << "  Name: " << reservations[i].name <<
+                                " | Number: " << reservations[i].number << endl;
+                    }
+                    cout << endl;
                 }
-                cout << endl;
             }
         }
 
@@ -332,7 +386,7 @@ void displayTables(){
 }
 
 void displayDate(Reservation reservation) {
-    cout << reservation.month << "/" << reservation.year;
+    cout << reservation.month << "/" << reservation.day << "/" << reservation.year;
 }
 
 void displayTime(Reservation reservation) {
@@ -424,10 +478,19 @@ vector<Reservation> createSampleReservations() {
     c.year = 2023;
     c.month = 2;
     c.day = 23;
-    c.hour = 13;
+    c.hour = 17;
     c.minute = 30;
+    Reservation d;
+    d.name = "Alex The fourth";
+    d.number = "111-222-3456";
+    d.year = 2023;
+    d.month = 2;
+    d.day = 25;
+    d.hour = 13;
+    d.minute = 30;
     sampleList.push_back(a);
     sampleList.push_back(b);
     sampleList.push_back(c);
+    sampleList.push_back(d);
     return sampleList;
 }
