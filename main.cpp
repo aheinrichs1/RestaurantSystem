@@ -92,7 +92,7 @@ int main() {
                         cout << endl << "Sorry, there are not enough seats available at the bar." << endl << endl;
                     } else {
                         //Change unoccupied bar seats to occupied
-                        for(size_t i = 0; i < NUMBER_OF_BAR_SEATS; i++) {
+                        for(int i = 0; i < NUMBER_OF_BAR_SEATS; i++) {
                             //iterate i to next unoccupied seat
                             while(isBarSeatOccupied[i]) {
                                 i++;
