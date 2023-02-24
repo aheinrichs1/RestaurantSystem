@@ -2,12 +2,13 @@
 #include <iomanip>
 #include <vector>
 #include <ctime> //used for reservations
+#include <string>
 using namespace std;
 
 //Structure for a Reservation
 struct Reservation {
     string name;
-    string number;
+    string phone;
     int sizeOfParty;
     int year;
     int month;
@@ -253,7 +254,7 @@ int main() {
             }
         }
 
-        //Check all table status
+        //Check all table and bar seat status
         else if(userInput == 4) {
             displayTables();
             cout << endl << endl;
@@ -261,7 +262,7 @@ int main() {
 
         //View reservations for the day
         else if(userInput == 5) {
-            //Check if there are any reservations today
+            //Check if there are any reservations
             if(reservations.empty()) {
                 cout << "There are no reservations" << endl <<
                         "-------------------------" << endl << endl;
@@ -315,7 +316,7 @@ int main() {
                         cout << " at ";
                         displayTime(reservations[i]);
                         cout << "  Name: " << reservations[i].name <<
-                                " | Number: " << reservations[i].number <<
+                                " | Number: " << reservations[i].phone <<
                                 " | Party size: " << reservations[i].sizeOfParty << endl;
                     }
                     cout << endl;
@@ -327,12 +328,109 @@ int main() {
         else if(userInput == 6) {
             cout << "Make reservation:" << endl <<
                     "-----------------" << endl;
-            //TODO
+            //Structure to hold new reservation
+            Reservation newReservation;
+            //Initialize input variables;
+            string partyName;
+            string partyPhone;
+            int partySize;
+            int resYear = (getTimeNow()->tm_year + 1900);
+            int resMonth;
+            int resDay;
+            int resHour;
+            string amPm;
+            int resMinute;
+            cout << "Please enter details:" << endl;
+            cout << "Name: ";
+            cin >> partyName;
+            cout << "Phone number: ";
+            cin >> partyPhone;
+            cout << "Party size: ";
+            cin >> partySize;
+
+            cout << "Month: ";
+            cin >> resMonth;
+            //Validate month
+            while((resMonth < 1) || (resMonth > 12)) {
+                cout << "Invalid month, enter from 1-12: ";
+                cin >> resMonth;
+            }
+
+            cout << "Day: ";
+            cin >> resDay;
+            //Validate day
+            while((resDay < 1) || (resDay > 31)) {
+                cout << "Invalid day, enter from 1-31: ";
+                cin >> resDay;
+            }
+
+            cout << "Hour: ";
+            cin >> resHour;
+            //Validate hour
+            while((resHour < 1) || (resHour > 12)) {
+                cout << "Invalid hour, enter from 1-12: ";
+                cin >> resHour;
+            }
+
+            cout << "Minute: ";
+            cin >> resMinute;
+            //Validate minute
+            while((resMinute < 0) || (resMinute > 59)) {
+                cout << "Invalid minute, enter from 0-59: ";
+                cin >> resMinute;
+            }
+
+            cout << "am or pm? ";
+            cin >> amPm;
+            //Validate
+            while((amPm != "am") && (amPm != "pm")) {
+                cout << "Invalid entry, enter am or pm: ";
+                cin >> amPm;
+            }
+            //Check if time is in am or pm
+            //Add 12 to resHour is in pm
+            if(amPm == "pm") {
+                resHour += 12;
+            }
+
+            //Input data into newReservation
+            newReservation.name = partyName;
+            newReservation.phone = partyPhone;
+            newReservation.sizeOfParty = partySize;
+            newReservation.year = resYear;
+            newReservation.month = resMonth;
+            newReservation.day = resDay;
+            newReservation.hour = resHour;
+            newReservation.minute = resMinute;
+
+            //Display reservation data before asking to save it
+            cout << "----------------------------" << endl;
+            cout << "The reservation you entered:" << endl;
+            cout << "Name: " << newReservation.name << " | Phone: " << newReservation.phone << " | Party Size: " << newReservation.sizeOfParty << endl;
+            cout << "Date: ";
+            displayDate(newReservation);
+            cout << " | Time: ";
+            displayTime(newReservation);
+            cout << endl << "----------------------------" << endl;
+            cout << "Is this correct? Enter 1 for yes or press 0 to cancel: ";
+            cin >> userInput;
+            validateBoolSelection(userInput);
+            //If yes then add to reservations
+            if(userInput == 1) {
+                cout << "Adding reservation to reservations." << endl <<
+                        "-----------------------------------" << endl << endl;
+                reservations.push_back(newReservation);
+            //If no then print message and do nothing
+            } else {
+                cout << "Reservation cancelled, returning to the main menu." << endl <<
+                        "--------------------------------------------------" << endl << endl;
+            }
+
         }
 
         //Cancel/remove reservation
         else if(userInput == 7) {
-
+        // TODO
         }
 
         //End day
@@ -462,16 +560,16 @@ vector<Reservation> createSampleReservations() {
     vector<Reservation> sampleList;
     Reservation a;
     a.name = "Alex Heinrichs";
-    a.number = "123-456-7899";
+    a.phone = "123-456-7899";
     a.sizeOfParty = 2;
     a.year = 2023;
     a.month = 2;
-    a.day = 23;
+    a.day = 24;
     a.hour = 12;
     a.minute = 30;
     Reservation b;
     b.name = "Alex Honricks";
-    b.number = "999-999-9999";
+    b.phone = "999-999-9999";
     b.sizeOfParty = 1;
     b.year = 2023;
     b.month = 2;
@@ -480,16 +578,16 @@ vector<Reservation> createSampleReservations() {
     b.minute = 0;
     Reservation c;
     c.name = "Alex The third";
-    c.number = "111-222-3456";
+    c.phone = "111-222-3456";
     c.sizeOfParty = 4;
     c.year = 2023;
     c.month = 2;
-    c.day = 23;
+    c.day = 24;
     c.hour = 17;
     c.minute = 30;
     Reservation d;
     d.name = "Alex The fourth";
-    d.number = "111-222-3456";
+    d.phone = "111-222-3456";
     d.sizeOfParty = 7;
     d.year = 2023;
     d.month = 2;
