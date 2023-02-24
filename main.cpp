@@ -430,7 +430,54 @@ int main() {
 
         //Cancel/remove reservation
         else if(userInput == 7) {
-        // TODO
+            //Declare temp variable for index of reservation to be deleted
+                    int reservationIndex;
+                    //Check if there are any reservations
+                    if(reservations.empty()) {
+                        cout << "There are no reservations" << endl <<
+                                "-------------------------" << endl << endl;
+                    //Else list reservations and ask which one to be deleted
+                    } else {
+                        cout << endl << "ALL RESERVATIONS" << endl <<
+                                "----------------" << endl;
+                        for(size_t i = 0; i < reservations.size(); i++) {
+                            cout << "Reservation " << (i+1) << ": ";
+                            displayDate(reservations[i]);
+                            cout << " at ";
+                            displayTime(reservations[i]);
+                            cout << "  Name: " << reservations[i].name <<
+                                    " | Number: " << reservations[i].phone <<
+                                    " | Party size: " << reservations[i].sizeOfParty << endl;
+                        }
+                        cout << endl << "--------------------------" << endl;
+                        cout << "Which reservation would you like to cancel? ";
+                        cout << "reservation size=" << reservations.size() << endl;
+                        cin >> reservationIndex;
+                        while ((reservationIndex < 1) || (reservationIndex > static_cast<int>(reservations.size()))) {
+                            cout << "Invalid input, enter a reservation from 1-" << reservations.size() << ": ";
+                            cin >> reservationIndex;
+                        }
+
+                        cout << "You selected reservation " << reservationIndex << ":" << endl;
+                        cout << "Name: " << reservations[reservationIndex-1].name << " | Phone: " << reservations[reservationIndex-1].phone << " | Party Size: " << reservations[reservationIndex-1].sizeOfParty << endl;
+                        cout << "Date: ";
+                        displayDate(reservations[reservationIndex-1]);
+                        cout << " | Time: ";
+                        displayTime(reservations[reservationIndex-1]);
+                        cout << endl << "----------------------------" << endl;
+                        cout << "Are you sure you want to cancel this reservation? Enter 1 for yes or 0 for no: ";
+                        cin >> userInput;
+                        validateBoolSelection(userInput);
+                        //If yes, then delete reservation at index userInput-1
+                        if(userInput == 1) {
+                            cout << "Erasing reservation" << endl;
+                            reservations.erase(reservations.begin() + (reservationIndex - 1));
+                            cout << "----------------------" << endl << endl;
+                        } else {
+                            cout << "Cancelled. Returning to the main menu" << endl;
+                            cout << "----------------------" << endl << endl;
+                        }
+                    }
         }
 
         //End day
