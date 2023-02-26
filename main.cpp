@@ -599,6 +599,8 @@ int main() {
     return 0;
 }
 
+//FUNCTIONS:
+
 void displayMenu() {
     cout << "Main Menu:" << endl <<
             "----------" << endl <<
