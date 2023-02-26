@@ -50,6 +50,11 @@ vector<bool> isTableOccupied;
 //Reservations
 vector<Reservation> reservations;
 
+//Waitlist
+vector<string> waitlist;
+string waitListCustomerName;
+string waitListPartySize;
+
 int main() {
 
     //variables for main:
