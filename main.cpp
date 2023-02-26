@@ -86,7 +86,7 @@ int main() {
     //set Reservations to an empty list
     reservations = vector<Reservation>();
 
-    //TESTING
+    //TESTING/DEMONSTRATION
     reservations = createSampleReservations();
     //cout << "Size of reservations : " << reservations.size() << endl << endl;
 
