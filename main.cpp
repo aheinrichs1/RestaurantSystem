@@ -1,3 +1,12 @@
+/*
+ * Program: RestaurantSystem
+ * Authors: Alex Heinrichs, Laura Thornburg, Suzette Senephansiri
+ *
+ * This program contains a restaurant system containing the functionality
+ * to seat, unseat, and edit the status tables or bar seats,
+ * add and cancel reservations, and add to a waitlist
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
