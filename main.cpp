@@ -53,7 +53,8 @@ vector<Reservation> reservations;
 //Waitlist
 vector<string> waitlist;
 string waitListCustomerName;
-string waitListPartySize;
+int waitListPartySize;
+string convertedPartySize;
 
 int main() {
 
@@ -621,8 +622,13 @@ void addToWaitList() {
     cin >> waitListCustomerName;
     cout << "Enter the number in the party: " << endl;
     cin >> waitListPartySize;
-    waitlist.push_back(waitListCustomerName + " " + waitListPartySize);
-    cout << "Party of " + waitListPartySize + " for " + waitListCustomerName + " has been added to wait list." << endl;
+        if(waitListPartySize > 0 || waitListPartySize < 9){
+            convertedPartySize = to_string(waitListPartySize);
+            waitlist.push_back(waitListCustomerName + " " + convertedPartySize);
+            cout << "Party of " + convertedPartySize + " for " + waitListCustomerName + " has been added to wait list." << endl; }
+        else {
+            cout << "Invalid Party size.  Enter a value between 1 - 8" << endl;
+        }
 }
 
 void print() {
