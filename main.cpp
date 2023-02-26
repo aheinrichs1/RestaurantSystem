@@ -31,6 +31,8 @@ bool areAllBarSeatsClosed();
 bool areAllBarSeatsOpen();
 tm *getTimeNow();
 vector<Reservation> createSampleReservations();
+void addToWaitList();
+void print();
 
 //Declare Program Variables
 const int NUMBER_OF_BAR_SEATS = 10;
@@ -480,6 +482,12 @@ int main() {
                     }
         }
 
+        //Add customer to wait list for table
+        else if(userInput == 8) {
+            addToWaitList();
+            print();
+        }
+
         //End day
         else if(userInput == 9) {
             cout << "Are you sure you would like to end the day?" << endl;
@@ -494,7 +502,6 @@ int main() {
                         "--------------------------------------" << endl;
             }
         }
-
     }
     return 0;
 }
@@ -509,6 +516,7 @@ void displayMenu() {
             "5. View Reservations" << endl <<
             "6. Make Reservation" << endl <<
             "7. Cancel Reservation" << endl <<
+            "8. Add Customer to Wait list" << endl <<
             "---------------------" << endl <<
             "9. End Day" << endl << endl;
 }
@@ -547,7 +555,7 @@ void displayTime(Reservation reservation) {
 }
 
 void validateMenuSelection(int &input) {
-    while((input < 1) || (input > 9) || (input == 8)) {
+    while((input < 1) || (input > 9)) {
           cout << "Invalid input" << endl <<
                   "Choose an option: ";
           cin >> input;
@@ -600,6 +608,22 @@ tm *getTimeNow() {
     //turn into a tm structure for reading contents easily
     tm *ltm = localtime(&now);
     return ltm;
+}
+
+void addToWaitList() {
+    //Enter Customer Name for list
+    cout << "Enter the name of the customer for waitlist: " << endl;
+    cin >> waitListCustomerName;
+    cout << "Enter the number in the party: " << endl;
+    cin >> waitListPartySize;
+    waitlist.push_back(waitListCustomerName + " " + waitListPartySize);
+    cout << "Party of " + waitListPartySize + " for " + waitListCustomerName + " has been added to wait list." << endl;
+}
+
+void print() {
+    cout << "Customers currently on the wait list are: " << endl;
+    for(int i=0; i < waitlist.size(); i++)
+        cout << waitlist.at(i) << ' ' << endl;
 }
 
 //USED FOR TESTING:
