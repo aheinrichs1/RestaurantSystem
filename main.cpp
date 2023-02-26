@@ -1,6 +1,7 @@
 /*
- * Program: RestaurantSystem
+ * Project: RestaurantSystem
  * Authors: Alex Heinrichs, Laura Thornburg, Suzette Senephansiri
+ * Group: ReMorse Coders
  *
  * This program contains a restaurant system containing the functionality
  * to seat, unseat, and edit the status tables or bar seats,
