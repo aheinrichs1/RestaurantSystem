@@ -649,7 +649,7 @@ void validateMenuSelection(int &input) {
 void validateTableSelection(int &input) {
     while((input < 1) || (input > (NUMBER_OF_TABLES + 1))) {
         cout << "Invalid selection" << endl;
-        cout << "Choose a table between 1 and " << NUMBER_OF_TABLES << ": ";
+        cout << "Choose a table between 1 and " << NUMBER_OF_TABLES << " or choose 20 to select bar: ";
         cin >> input;
     }
 }
