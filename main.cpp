@@ -3,6 +3,7 @@
 #include <vector>
 #include <ctime> //used for reservations
 #include <string>
+#include <stdlib.h>
 using namespace std;
 
 //Structure for a Reservation
@@ -33,6 +34,7 @@ tm *getTimeNow();
 vector<Reservation> createSampleReservations();
 void addToWaitList();
 void print();
+void clearScreen();
 
 //Declare Program Variables
 const int NUMBER_OF_BAR_SEATS = 10;
@@ -92,6 +94,7 @@ int main() {
 
         //Seat party
         if(userInput == 1) {
+            clearScreen();
             cout << "Seat party:" << endl <<
                     "-----------" << endl;
             //display tables
@@ -112,7 +115,7 @@ int main() {
                     cout << endl << "Sorry, there are no bar seats open." << endl << endl;
                 } else {
                     //Determine number of people to sit at bar
-                    cout << "Bar selected. Seats open: " << numBarSeatsOpen << endl <<
+                    cout << endl << "Bar selected. Seats open: " << numBarSeatsOpen << endl <<
                             "How many are sitting? ";
 
                     //Initialize temp variable for determining amount sitting
@@ -127,11 +130,15 @@ int main() {
                     }
                     //Check if too many people are trying to sit
                     if(numBarSeatInput > numBarSeatsOpen) {
-                        cout << endl << "Sorry, there are not enough seats available at the bar." << endl << endl;
+                        //Clear Screen
+                        clearScreen();
+
+                        cout << "Sorry, there are not enough seats available at the bar." << endl << endl;
 
                     //Else Change unoccupied bar seats to occupied
                     } else {
-
+                        //set userInput to numBarSeatInput for printing
+                        userInput = numBarSeatInput;
                         for(int i = 0; i < NUMBER_OF_BAR_SEATS; i++) {
                             //iterate i to next unoccupied seat
                             while(isBarSeatOccupied[i]) {
@@ -144,30 +151,42 @@ int main() {
                                 --numBarSeatsOpen;
                             }
                         }
-                        cout << endl << "Party Seated at bar." << endl << endl;
+                        //Clear Screen
+                        clearScreen();
+                        cout << "Party of " << userInput << " seated at bar." << endl <<
+                                "------------------------------" << endl << endl;
                     }
                 }
             } else {
 
                 //Check that table selected is open
                 while(isTableOccupied[tableSelection - 1]) {
-                    cout << "Sorry, that table is occupied. Choose another table: ";
+                    cout << endl << "Sorry, that table is occupied. Choose another table: ";
                     cin >> tableSelection;
                     //Validate input
                     validateTableSelection(tableSelection);
                 }
+                //Clear screen
+                clearScreen();
                 //Set table selected to occupied and notify user
                 isTableOccupied[tableSelection - 1] = true;
-                cout << "Table number " << tableSelection << " has been set to occupied." << endl <<
-                        "--------------------------------------" << endl;
+                cout<< "Table number " << tableSelection << " has been set to occupied." << endl <<
+                        "--------------------------------------" << endl << endl;
             }
         }
 
         //Edit table
         else if(userInput == 2) {
+            //Clear screen
+            clearScreen();
+
+            cout << "EDIT TABLE:" << endl <<
+                    "-------------------" << endl;
+
             //display tables
             displayTables();
-            cout << "Which table would you like to edit? ";
+            cout << "-----------------------------------" << endl <<
+                    "Which table would you like to edit? ";
             cin >> tableSelection;
             //Validate input
             validateTableSelection(tableSelection);
@@ -175,13 +194,14 @@ int main() {
             //Check for bar seating input
             if(tableSelection == (NUMBER_OF_TABLES + 1)) {
                 cout << endl << "Editing bar seats" << endl;
-                cout << "Seats open: " << numBarSeatsOpen << endl;
+                cout << "Seats open: " << numBarSeatsOpen << endl <<
+                        "----------------------" << endl;
                 cout << "How many seats would you like to set open? ";
                 cin >> userInput;
                 //Validate
 
                 while((userInput < 0) || (userInput > NUMBER_OF_BAR_SEATS)) {
-                    cout << "Invalid number of seats, enter between 0 and " << NUMBER_OF_BAR_SEATS << endl <<
+                    cout << endl << "Invalid number of seats, enter between 0 and " << NUMBER_OF_BAR_SEATS << endl <<
                             "how many seat you would like to set open: ";
                     cin >> userInput;
                 }
@@ -197,7 +217,9 @@ int main() {
                     isBarSeatOccupied[i] = true;
                     --numBarSeatsOpen;
                 }
-                cout << endl << "Bar seats set to " << userInput << " open." << endl << endl;
+                //Clear Screen
+                clearScreen();
+                cout << "Bar seats set to " << userInput << " open." << endl << endl;
 
             //Else edit selected table
             } else {
@@ -206,6 +228,9 @@ int main() {
                 cin >> userInput;
                 //Validate input
                 validateBoolSelection(userInput);
+
+                //Clear screen
+                clearScreen();
 
                 //Set table
                 isTableOccupied[tableSelection - 1] = userInput;
@@ -217,26 +242,36 @@ int main() {
 
         //Reset table or bar seating
         else if(userInput == 3) {
-            //display tables
-            displayTables();
+            //Clear Screen
+            clearScreen();
 
             //check if tables and bar seats are all open
             if (areAllTablesOpen() && areAllBarSeatsOpen()) {
-                cout << endl << "All tables and bar seats are open!" << endl;
-                cout << "Returning to main menu" << endl << endl;
+                cout << "All tables and bar seats are open!" << endl << endl;
+                cout << "Returning to main menu" << endl <<
+                        "-----------------------" << endl;
             } else {
-                cout << endl << "Which table would you like to clear? Select 20 for bar seating ";
+                cout << "RESET TABLE OR BAR:" << endl <<
+                        "------------------------" << endl;
+
+                //display tables
+                displayTables();
+
+                cout << endl << "Which table would you like to clear? ";
                 cin >> tableSelection;
                 //Validate input
                 validateTableSelection(tableSelection);
 
                 //Check if bar table is asked to be cleared
                 if(tableSelection == (NUMBER_OF_TABLES + 1)) {
-                    cout << "Are you sure you would like to clear the bar seating to open?" << endl <<
+                    cout << endl << "Are you sure you would like to clear the bar seating to open?" << endl <<
                             "1 for yes, 0 for cancel: ";
                     cin >> userInput;
                     //Validate bool
                     validateBoolSelection(userInput);
+
+                    //Clear screen
+                    clearScreen();
 
                     if(userInput == 1) {
                         //Reset bar seating to open
@@ -250,34 +285,47 @@ int main() {
                 } else {
                     //Check that table selected is occupied
                     while(!isTableOccupied[tableSelection - 1]) {
-                        cout << "Sorry, that table is already open. Choose another table: ";
+                        cout << endl << "Sorry, that table is already open. Choose another table: ";
                         cin >> tableSelection;
                         //Validate input
                         validateTableSelection(tableSelection);
                     }
+                    //Clear screen
+                    clearScreen();
+
                     cout << "Clearing table " << tableSelection << endl;
                     isTableOccupied[tableSelection - 1] = 0;
-                    cout << "--------------------------------------" << endl;
+                    cout << "--------------------------------------" << endl << endl;
                 }
             }
         }
 
         //Check all table and bar seat status
         else if(userInput == 4) {
+
+            //Clear Screen
+            clearScreen();
+
             displayTables();
-            cout << endl << endl;
+            cout << "-------------" << endl;
         }
 
         //View reservations for the day
         else if(userInput == 5) {
+            //Clear screen
+            clearScreen();
+
             //Check if there are any reservations
             if(reservations.empty()) {
                 cout << "There are no reservations" << endl <<
                         "-------------------------" << endl << endl;
             } else { //if there are reservations, continue with viewing options
+                cout << "VIEW RESERVATIONS" << endl <<
+                        "-----------------" << endl;
+
                 //get the current time
                 tm *now = getTimeNow();
-                cout << "Would you like to check the reservations for today or all reservations?" << endl <<
+                cout << endl << "Would you like to check the reservations for today or all reservations?" << endl <<
                         "Enter 1 to check for today or 0 for all: ";
                 cin >> userInput;
                 //Validate input
@@ -301,11 +349,15 @@ int main() {
 
                     //Check if there are no reservations today
                     if(reservationsToday.size() == 0) {
+                        //Clear screen
+                        clearScreen();
                         cout << "There are no reservations today" << endl <<
                                 "-------------------------------" << endl << endl;
                     } else {
+                        //Clear screen
+                        clearScreen();
                         //Display today's reservations
-                        cout << endl << "TODAYS RESERVATIONS" << endl <<
+                        cout << "TODAYS RESERVATIONS" << endl <<
                                 "----------------" << endl;
                         for(size_t i = 0; i < reservationsToday.size(); i++) {
                             cout << "Reservation " << (i+1) << ": ";
@@ -313,10 +365,13 @@ int main() {
                             cout << "  Name: " << reservationsToday[i].name <<
                                     " | Party size: " << reservationsToday[i].sizeOfParty << endl;
                         }
+                        cout << "--------------------------" << endl;
                     }
 
                 } else { //Listing all reservations
-                    cout << endl << "ALL RESERVATIONS" << endl <<
+                    //Clear screen
+                    clearScreen();
+                    cout << "ALL RESERVATIONS" << endl <<
                             "----------------" << endl;
                     for(size_t i = 0; i < reservations.size(); i++) {
                         cout << "Reservation " << (i+1) << ": ";
@@ -327,14 +382,17 @@ int main() {
                                 " | Number: " << reservations[i].phone <<
                                 " | Party size: " << reservations[i].sizeOfParty << endl;
                     }
-                    cout << endl;
+                    cout << endl <<
+                            "---------------------------" << endl;
                 }
             }
         }
 
         //Make reservation
         else if(userInput == 6) {
-            cout << "Make reservation:" << endl <<
+            //Clear screen
+            clearScreen();
+            cout << "MAKE RESERVATION:" << endl <<
                     "-----------------" << endl;
             //Structure to hold new reservation
             Reservation newReservation;
@@ -411,8 +469,10 @@ int main() {
             newReservation.hour = resHour;
             newReservation.minute = resMinute;
 
+            //Clear screen
+            clearScreen();
+
             //Display reservation data before asking to save it
-            cout << "----------------------------" << endl;
             cout << "The reservation you entered:" << endl;
             cout << "Name: " << newReservation.name << " | Phone: " << newReservation.phone << " | Party Size: " << newReservation.sizeOfParty << endl;
             cout << "Date: ";
@@ -423,6 +483,10 @@ int main() {
             cout << "Is this correct? Enter 1 for yes or press 0 to cancel: ";
             cin >> userInput;
             validateBoolSelection(userInput);
+
+            //Clear screen
+            clearScreen();
+
             //If yes then add to reservations
             if(userInput == 1) {
                 cout << "Adding reservation to reservations." << endl <<
@@ -438,60 +502,74 @@ int main() {
 
         //Cancel/remove reservation
         else if(userInput == 7) {
+            //Clear screen
+            clearScreen();
             //Declare temp variable for index of reservation to be deleted
-                    int reservationIndex;
-                    //Check if there are any reservations
-                    if(reservations.empty()) {
-                        cout << "There are no reservations" << endl <<
-                                "-------------------------" << endl << endl;
-                    //Else list reservations and ask which one to be deleted
-                    } else {
-                        cout << endl << "ALL RESERVATIONS" << endl <<
-                                "----------------" << endl;
-                        for(size_t i = 0; i < reservations.size(); i++) {
-                            cout << "Reservation " << (i+1) << ": ";
-                            displayDate(reservations[i]);
-                            cout << " at ";
-                            displayTime(reservations[i]);
-                            cout << "  Name: " << reservations[i].name <<
-                                    " | Number: " << reservations[i].phone <<
-                                    " | Party size: " << reservations[i].sizeOfParty << endl;
-                        }
-                        cout << endl << "--------------------------" << endl;
-                        cout << "Which reservation would you like to cancel? ";
-                        cout << "reservation size=" << reservations.size() << endl;
-                        cin >> reservationIndex;
-                        while ((reservationIndex < 1) || (reservationIndex > static_cast<int>(reservations.size()))) {
-                            cout << "Invalid input, enter a reservation from 1-" << reservations.size() << ": ";
-                            cin >> reservationIndex;
-                        }
+            int reservationIndex;
+            //Check if there are any reservations
+            if(reservations.empty()) {
+                cout << "There are no reservations to cancel" << endl <<
+                        "-------------------------" << endl << endl;
+            //Else list reservations and ask which one to be deleted
+            } else {
+                cout << "CANCEL A RESERVATION" << endl <<
+                        "--------------------" << endl;
+                cout << endl << "ALL RESERVATIONS" << endl <<
+                        "----------------" << endl;
+                for(size_t i = 0; i < reservations.size(); i++) {
+                    cout << "Reservation " << (i+1) << ": ";
+                    displayDate(reservations[i]);
+                    cout << " at ";
+                    displayTime(reservations[i]);
+                    cout << "  Name: " << reservations[i].name <<
+                            " | Number: " << reservations[i].phone <<
+                            " | Party size: " << reservations[i].sizeOfParty << endl;
+                }
+                cout << endl << "--------------------------" << endl << endl;
+                cout << "Which reservation would you like to cancel? ";
+                cin >> reservationIndex;
+                while ((reservationIndex < 1) || (reservationIndex > static_cast<int>(reservations.size()))) {
+                    cout << "Invalid input, enter a reservation from 1-" << reservations.size() << ": ";
+                    cin >> reservationIndex;
+                }
 
-                        cout << "You selected reservation " << reservationIndex << ":" << endl;
-                        cout << "Name: " << reservations[reservationIndex-1].name << " | Phone: " << reservations[reservationIndex-1].phone << " | Party Size: " << reservations[reservationIndex-1].sizeOfParty << endl;
-                        cout << "Date: ";
-                        displayDate(reservations[reservationIndex-1]);
-                        cout << " | Time: ";
-                        displayTime(reservations[reservationIndex-1]);
-                        cout << endl << "----------------------------" << endl;
-                        cout << "Are you sure you want to cancel this reservation? Enter 1 for yes or 0 for no: ";
-                        cin >> userInput;
-                        validateBoolSelection(userInput);
-                        //If yes, then delete reservation at index userInput-1
-                        if(userInput == 1) {
-                            cout << "Erasing reservation" << endl;
-                            reservations.erase(reservations.begin() + (reservationIndex - 1));
-                            cout << "----------------------" << endl << endl;
-                        } else {
-                            cout << "Cancelled. Returning to the main menu" << endl;
-                            cout << "----------------------" << endl << endl;
-                        }
-                    }
+                cout << endl <<
+                        "----------------------------" << endl <<
+                        "You selected reservation " << reservationIndex << ":" << endl;
+                cout << "Name: " << reservations[reservationIndex-1].name << " | Phone: " << reservations[reservationIndex-1].phone << " | Party Size: " << reservations[reservationIndex-1].sizeOfParty << endl;
+                cout << "Date: ";
+                displayDate(reservations[reservationIndex-1]);
+                cout << " | Time: ";
+                displayTime(reservations[reservationIndex-1]);
+                cout << endl << "----------------------------" << endl;
+                cout << "Are you sure you want to cancel this reservation? Enter 1 for yes or 0 for no: ";
+                cin >> userInput;
+                validateBoolSelection(userInput);
+
+                //Clear screen
+                clearScreen();
+
+                //If yes, then delete reservation at index userInput-1
+                if(userInput == 1) {
+                    cout << "Reservation has been cancelled. Returning to the main menu" << endl;
+                    reservations.erase(reservations.begin() + (reservationIndex - 1));
+                    cout << "----------------------" << endl << endl;
+                } else {
+                    cout << "Reservation not cancelled. Returning to the main menu" << endl;
+                    cout << "----------------------" << endl << endl;
+                }
+            }
         }
 
         //Add customer to wait list for table
         else if(userInput == 8) {
+            //Clear screen
+            clearScreen();
+            cout << "WAITLIST" << endl <<
+                    "--------" << endl;
             addToWaitList();
             print();
+            cout << endl << "---------------------" << endl << endl;
         }
 
         //End day
@@ -618,23 +696,32 @@ tm *getTimeNow() {
 
 void addToWaitList() {
     //Enter Customer Name for list
-    cout << "Enter the name of the customer for waitlist: " << endl;
+    cout << "Enter the name of the customer for waitlist: ";
     cin >> waitListCustomerName;
-    cout << "Enter the number in the party: " << endl;
+    cout << "Enter the number in the party: ";
     cin >> waitListPartySize;
-        if(waitListPartySize > 0 || waitListPartySize < 9){
-            convertedPartySize = to_string(waitListPartySize);
-            waitlist.push_back(waitListCustomerName + " " + convertedPartySize);
-            cout << "Party of " + convertedPartySize + " for " + waitListCustomerName + " has been added to wait list." << endl; }
-        else {
-            cout << "Invalid Party size.  Enter a value between 1 - 8" << endl;
-        }
+    //Clear screen
+    clearScreen();
+    if(waitListPartySize > 0 && waitListPartySize < 9){
+        convertedPartySize = to_string(waitListPartySize);
+        waitlist.push_back(waitListCustomerName + " " + convertedPartySize);
+        cout << "Party of " + convertedPartySize + " for " + waitListCustomerName + " has been added to wait list." << endl <<
+                "------------------------------------------------" << endl; }
+    else {
+        cout << "Invalid Party size.  Enter a value between 1 - 8" << endl <<
+                "------------------------------------------" << endl;
+    }
 }
 
 void print() {
     cout << "Customers currently on the wait list are: " << endl;
-    for(int i=0; i < waitlist.size(); i++)
+    for(size_t i=0; i < waitlist.size(); i++)
         cout << waitlist.at(i) << ' ' << endl;
+}
+
+void clearScreen() {
+    cout << flush;
+    system("CLS");
 }
 
 //USED FOR TESTING:
@@ -646,35 +733,35 @@ vector<Reservation> createSampleReservations() {
     a.sizeOfParty = 2;
     a.year = 2023;
     a.month = 2;
-    a.day = 24;
-    a.hour = 12;
+    a.day = 26;
+    a.hour = 18;
     a.minute = 30;
     Reservation b;
-    b.name = "Alex Honricks";
+    b.name = "Suzette Senephansiri";
     b.phone = "999-999-9999";
     b.sizeOfParty = 1;
     b.year = 2023;
     b.month = 2;
-    b.day = 23;
-    b.hour = 12;
+    b.day = 26;
+    b.hour = 19;
     b.minute = 0;
     Reservation c;
-    c.name = "Alex The third";
-    c.phone = "111-222-3456";
+    c.name = "Laura Thornburg";
+    c.phone = "555-555-5555";
     c.sizeOfParty = 4;
     c.year = 2023;
     c.month = 2;
-    c.day = 24;
+    c.day = 26;
     c.hour = 17;
     c.minute = 30;
     Reservation d;
-    d.name = "Alex The fourth";
-    d.phone = "111-222-3456";
+    d.name = "Joe Struss";
+    d.phone = "111-222-4455";
     d.sizeOfParty = 7;
     d.year = 2023;
     d.month = 2;
-    d.day = 25;
-    d.hour = 13;
+    d.day = 27;
+    d.hour = 18;
     d.minute = 30;
     sampleList.push_back(a);
     sampleList.push_back(b);
